@@ -36,6 +36,38 @@ async function getPresentes(req, res) {
   }
 }
 
+async function updateStatus(req, res) {
+  try {
+    const { rowIndex, status } = req.body;
+
+    const auth = new google.auth.GoogleAuth({
+      keyFile: path.join(__dirname, '../credentials.json'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    const client = await auth.getClient();
+    const sheets = google.sheets({ version: 'v4', auth: client });
+
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const range = `Presentes!D${rowIndex + 2}`; // +2 por conta do cabeçalho e índice base 0
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range,
+      valueInputOption: 'RAW',
+      resource: {
+        values: [[status]],
+      },
+    });
+
+    res.status(200).json({ message: 'Status atualizado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error);
+    res.status(500).json({ error: 'Erro ao atualizar status' });
+  }
+}
+
+
 async function addPresent(req, res) {
   try {
     const { nome, presente, valor } = req.body;
@@ -77,4 +109,5 @@ async function addPresent(req, res) {
 module.exports = {
   getPresentes,
   addPresent,
+  updateStatus
 };
