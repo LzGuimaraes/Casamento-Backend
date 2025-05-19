@@ -51,9 +51,84 @@ O backend rodará por padrão na porta `3001`.
 ## 📡 Endpoints da API
 
 ### 🎁 Presentes
-- `GET /presentes` → Lista todos os presentes
-- `POST /presentes/reservar` → Reserva um presente
-  - Body: `{ id, nome, email, mensagem }`
+- `GET /presentes` → Lista todos os presentes cadastrados
+  - **Resposta:** Array de presentes
+  - **Exemplo de resposta:**
+    ```json
+    [
+      { "id": 1, "nome": "Cafeteira", "valor": "200", "status": "pendente", "reservadoPor": "" },
+      { "id": 2, "nome": "Jogo de Toalhas", "valor": "150", "status": "reservado", "reservadoPor": "Maria - maria@email.com - Parabéns!" }
+    ]
+    ```
+
+- `POST /presentes` → Adiciona um novo presente
+  - **Body:**
+    ```json
+    { "nome": "Cafeteira", "presente": "Cafeteira", "valor": "200" }
+    ```
+  - **Resposta:**
+    ```json
+    { "message": "Presente adicionado com sucesso!" }
+    ```
+
+- `PATCH /presentes/status` → Atualiza o status de um presente
+  - **Body:**
+    ```json
+    { "rowIndex": 2, "status": "reservado" }
+    ```
+  - **Resposta:**
+    ```json
+    { "message": "Status atualizado com sucesso!" }
+    ```
+
+### 🥳 Presenças
+- `POST /presencas` → Confirma presença de convidado
+  - **Body:**
+    ```json
+    { "nome": "João", "email": "joao@email.com", "acompanhantes": 2, "mensagem": "Ansioso!", "presente": "Cafeteira" }
+    ```
+  - **Resposta:**
+    ```json
+    { "message": "Presença confirmada com sucesso!" }
+    ```
+
+- `GET /presencas` → Lista todas as presenças confirmadas
+  - **Resposta:** Array de presenças
+  - **Exemplo de resposta:**
+    ```json
+    [
+      { "nome": "João", "presenca": "Confirmado", "observacao": "Email: joao@email.com, Acompanhantes: 2, Mensagem: Ansioso!, Presente: Cafeteira" }
+    ]
+    ```
+
+---
+
+## Exemplos de Uso com curl
+
+### Listar presentes
+```bash
+curl http://localhost:3001/presentes
+```
+
+### Adicionar presente
+```bash
+curl -X POST http://localhost:3001/presentes -H "Content-Type: application/json" -d '{"nome":"Cafeteira","presente":"Cafeteira","valor":"200"}'
+```
+
+### Atualizar status do presente
+```bash
+curl -X PATCH http://localhost:3001/presentes/status -H "Content-Type: application/json" -d '{"rowIndex":2,"status":"reservado"}'
+```
+
+### Confirmar presença
+```bash
+curl -X POST http://localhost:3001/confirmar-presenca -H "Content-Type: application/json" -d '{"nome":"João","email":"joao@email.com","acompanhantes":2,"mensagem":"Ansioso!","presente":"Cafeteira"}'
+```
+
+### Listar presenças
+```bash
+curl http://localhost:3001/confirmar-presenca
+```
 
 ### 🥳 Confirmar Presença
 - `POST /confirmar-presenca` → Registra uma presença
@@ -71,16 +146,12 @@ npm install express cors dotenv googleapis google-auth-library dayjs
 ## ✅ Planilha esperada
 
 ### Aba "Presentes"
-| Nome do Presente | Valor | Status     | Reservado Por                     |
-|------------------|-------|------------|-----------------------------------|
-| Panela Elétrica  | R$200 | disponível |                                   |
-| Jogo de Toalhas  | R$100 | reservado  | João - joao@email.com - mensagem |
+| Reservado Por    | Presente | Valor      |  Status  |
+|------------------|----------|------------|-------   |  
+| Panela Elétrica  | R$200    | disponível |          |                        |
+| Jogo de Toalhas  | R$100    | reservado  | pendente |
 
-### Aba "Presencas"
-| Nome  | Email            | Acompanhantes | Mensagem           |
-|-------|------------------|----------------|--------------------|
-| João  | joao@email.com   | 1              | Estaremos lá!      |
-
----
-
-Qualquer dúvida, me chame! 😉
+### Aba "Convidados"
+| Nome Completo  | Email            | Status |
+|----------------|------------------|--------|
+| João           | joao@email.com   | 1      |
