@@ -12,4 +12,9 @@ app.use(express.json());
 app.use('/presentes', presenteRoutes);
 app.use('/confirmar-presenca', presencaRoutes);
 
-app.listen(3001, () => console.log('Servidor rodando na porta 3001'));
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
