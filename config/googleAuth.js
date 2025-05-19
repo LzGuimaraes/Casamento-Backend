@@ -24,7 +24,7 @@ async function getSheetsClient() {
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
 // ✅ REGISTRAR PRESENÇA (atualiza linha de quem confirmou)
-async function registrarPresenca({ nome, observacao }) {
+async function registrarPresenca({ nome, status }) {
   const sheets = await getSheetsClient();
 
   // Pega todas as linhas da aba Convidados
@@ -50,7 +50,7 @@ async function registrarPresenca({ nome, observacao }) {
   const rowNumber = rowIndex + 2; // +2 porque começa da linha 2 na planilha
 
   const updateRange = `Convidados!B${rowNumber}:C${rowNumber}`; // Presença e Observação
-  const values = [['Confirmado', observacao || '']];
+  const values = [[status, '']];
 
   await sheets.spreadsheets.values.update({
     spreadsheetId,
@@ -78,18 +78,18 @@ async function listarPresencas() {
     return [];
   }
 
-  return rows.map(([nome, presenca, observacao]) => ({
-    nome,
-    presenca,
-    observacao,
+  return rows.map(([NomeCompleto, Email, Status]) => ({
+    NomeCompleto,
+    Email,
+    Status,
   }));
 }
 
 // CADASTRAR NOVA PRESENÇA (adiciona nova linha de convidado)
-async function cadastrarNovaPresenca({ nome, observacao }) {
+async function cadastrarNovaPresenca({ NomeCompleto, Status }) {
   const sheets = await getSheetsClient();
   const range = 'Convidados!A2:C';
-  const values = [[nome, '', observacao || '']];
+  const values = [[NomeCompleto, '', Status || '']];
   await sheets.spreadsheets.values.append({
     spreadsheetId,
     range,
