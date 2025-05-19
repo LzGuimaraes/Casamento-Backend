@@ -1,9 +1,17 @@
 const { google } = require('googleapis');
 const path = require('path');
+const fs = require('fs');
+
+const credentialsPath = path.join(__dirname, '../credentials.json');
+
+if (process.env.GOOGLE_CREDENTIALS_BASE64 && !fs.existsSync(credentialsPath)) {
+  const decoded = Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf8');
+  fs.writeFileSync(credentialsPath, decoded);
+}
 
 async function getSheetsClient() {
   const auth = new google.auth.GoogleAuth({
-    keyFile: path.join(__dirname, '../credentials.json'),
+    keyFile: credentialsPath,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 
@@ -11,6 +19,7 @@ async function getSheetsClient() {
   const sheets = google.sheets({ version: 'v4', auth: client });
   return sheets;
 }
+
 
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
