@@ -3,18 +3,18 @@ const googleAuth = require('../config/googleAuth')
 
 exports.confirmarPresenca = async (req, res) => {
   try {
-    const { nome, email, acompanhantes = '' } = req.body;
+    const { NomeCompleto, email, status,acompanhantes = '' } = req.body;
 
-    if (!nome || !email) {
-      return res.status(400).json({ error: 'Nome e email são obrigatórios' });
+    if (!NomeCompleto || !email ||status ) {
+      return res.status(400).json({ error: 'Nome e email e status são obrigatórios' });
     }
 
     const sheets = await googleAuth.getSheetsClient();
 
     const novaLinha = [[
-      nome,
+      NomeCompleto,
       email,
-      'Confirmado',
+      status,
       acompanhantes
     ]];
 
