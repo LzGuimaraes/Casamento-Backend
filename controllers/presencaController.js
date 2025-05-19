@@ -3,9 +3,9 @@ const googleAuth = require('../config/googleAuth')
 
 exports.confirmarPresenca = async (req, res) => {
   try {
-    const { NomeCompleto, email, status,acompanhantes = '' } = req.body;
+    const { NomeCompleto, email, status, acompanhantes = '' } = req.body;
 
-    if (!NomeCompleto || !email ||status ) {
+    if (!NomeCompleto || !email || !status ) {
       return res.status(400).json({ error: 'Nome e email e status são obrigatórios' });
     }
 
