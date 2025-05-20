@@ -3,10 +3,10 @@ const googleAuth = require('../config/googleAuth')
 
 exports.confirmarPresenca = async (req, res) => {
   try {
-    const { NomeCompleto, email, status, acompanhantes = '' } = req.body;
+    const { NomeCompleto, email, status, acompanhantes } = req.body;
 
     if (!NomeCompleto || !email || !status ) {
-      return res.status(400).json({ error: 'Nome e email e status são obrigatórios' });
+      return res.status(400).json({ error: 'NomeCompleto, email e status são obrigatórios' });
     }
 
     const sheets = await googleAuth.getSheetsClient();
@@ -20,7 +20,7 @@ exports.confirmarPresenca = async (req, res) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Convidados!A:D', // intervalo onde vai adicionar (colunas de A a D)
+      range: 'Convidados!A:D', 
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       requestBody: {
@@ -28,7 +28,7 @@ exports.confirmarPresenca = async (req, res) => {
       }
     });
 
-    res.json({ mensagem: 'Presença confirmada!' });
+    res.json({ mensagem: 'Presença confirmada!', values: novaLinha   });
   } catch (error) {
     console.error('Erro ao confirmar presença:', error);
     res.status(500).json({ error: 'Erro ao confirmar presença' });

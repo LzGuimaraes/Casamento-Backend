@@ -70,7 +70,8 @@ async function updateStatus(req, res) {
 
 async function addPresent(req, res) {
   try {
-    const { nome, presente, valor } = req.body;
+    const { nome, presente, valor, status } = req.body;
+    
 
     if (!nome || !presente || !valor) {
       return res.status(400).json({ error: 'Campos obrigatórios: nome, presente, valor' });
@@ -88,7 +89,7 @@ async function addPresent(req, res) {
     const range = 'Presentes!A2:D';
 
     // Coluna D = status reservado (ex: "pendente")
-    const values = [[nome, presente, valor, 'pendente']];
+    const values = [[nome, presente, valor, status || 'pendente']];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -99,7 +100,9 @@ async function addPresent(req, res) {
       },
     });
 
-    res.status(201).json({ message: 'Presente adicionado com sucesso!' });
+    res.status(201).json({ message: 'Presente adicionado com sucesso!',
+      presente: { nome, presente, valor, status: status || 'pendente' }
+      });
   } catch (error) {
     console.error('Erro ao adicionar presente:', error);
     res.status(500).json({ error: 'Erro ao adicionar presente' });

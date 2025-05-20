@@ -44,8 +44,9 @@ async function registrarPresenca({ nome, status }) {
   const rowIndex = rows.findIndex(row => row[0]?.toLowerCase() === nome.toLowerCase());
 
   if (rowIndex === -1) {
-    throw new Error('Convidado não encontrado');
-  }
+  throw new Error(`Convidado com nome "${nome}" não encontrado.`);
+}
+
 
   const rowNumber = rowIndex + 2; // +2 porque começa da linha 2 na planilha
 
@@ -55,7 +56,7 @@ async function registrarPresenca({ nome, status }) {
   await sheets.spreadsheets.values.update({
     spreadsheetId,
     range: updateRange,
-    valueInputOption: 'RAW',
+    valueInputOption: 'USER_ENTERED',
     requestBody: {
       values,
     },
@@ -65,7 +66,7 @@ async function registrarPresenca({ nome, status }) {
 // LISTAR PRESENÇAS (retorna todos os convidados)
 async function listarPresencas() {
   const sheets = await getSheetsClient();
-  const range = 'Convidados!A2:C';
+  const range = 'Convidados!A2:D';
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -78,28 +79,28 @@ async function listarPresencas() {
     return [];
   }
 
-  return rows.map(([NomeCompleto, Email, Status]) => ({
-    NomeCompleto,
-    Email,
-    Status,
-  }));
+  return rows.map(([NomeCompleto, Email, Status, Acompanhantes]) => ({
+  NomeCompleto,
+  Email,
+  Status,
+  Acompanhantes: Acompanhantes
+}));
 }
 
 // CADASTRAR NOVA PRESENÇA (adiciona nova linha de convidado)
-async function cadastrarNovaPresenca({ NomeCompleto, Status }) {
+async function cadastrarNovaPresenca({ NomeCompleto, Email, Status, Acompanhantes }) {
   const sheets = await getSheetsClient();
-  const range = 'Convidados!A2:C';
-  const values = [[NomeCompleto, '', Status || '']];
+  const values = [[NomeCompleto, Email, Status, Acompanhantes]];
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range,
-    valueInputOption: 'RAW',
+    range: 'Convidados!A2:D',
+    valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: { values },
   });
 }
 
-module.exports = {
+module.exports = {  
   getSheetsClient,
   registrarPresenca,
   listarPresencas,

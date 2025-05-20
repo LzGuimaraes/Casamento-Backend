@@ -1,6 +1,6 @@
 const { google } = require('googleapis');
 const googleAuth = require('../config/googleAuth');
-const dayjs = require('dayjs');
+
 
 const sheetId = process.env.GOOGLE_SHEET_ID;
 
@@ -58,19 +58,21 @@ exports.registrarPresenca = async ({ nome, email, acompanhantes, mensagem, prese
       observacao: `Email: ${email}, Acompanhantes: ${acompanhantes}, Mensagem: ${mensagem}, Presente: ${presente}`
     });
   } catch (error) {
-    console.error('Erro ao registrar presença:', error);
+    console.error(`[registrarPresenca] Falha ao registrar presença de ${nome}:`, error);
+
     throw error;
   }
 };
 
-exports.cadastrarNovaPresenca = async ({ nome, observacao }) => {
+exports.cadastrarNovaPresenca = async ({ nome, email, status }) => {
   try {
-    await googleAuth.cadastrarNovaPresenca({ nome, observacao });
+    await googleAuth.cadastrarNovaPresenca({ NomeCompleto: nome, Email: email, Status: status });
   } catch (error) {
     console.error('Erro ao cadastrar nova presença:', error);
     throw error;
   }
 };
+
 
 exports.listarPresencas = async () => {
   try {
