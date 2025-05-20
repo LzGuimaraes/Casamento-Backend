@@ -67,7 +67,6 @@ async function updateStatus(req, res) {
   }
 }
 
-
 async function addPresent(req, res) {
   try {
     const { nome, presente, valor, status } = req.body;
@@ -88,7 +87,6 @@ async function addPresent(req, res) {
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const range = 'Presentes!A2:D';
 
-    // Coluna D = status reservado (ex: "pendente")
     const values = [[nome, presente, valor, status || 'pendente']];
 
     await sheets.spreadsheets.values.append({

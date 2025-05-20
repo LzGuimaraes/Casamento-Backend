@@ -1,6 +1,4 @@
-const { google } = require('googleapis');
 const googleAuth = require('../config/googleAuth');
-
 
 const sheetId = process.env.GOOGLE_SHEET_ID;
 
@@ -72,7 +70,6 @@ exports.cadastrarNovaPresenca = async ({ nome, email, status }) => {
     throw error;
   }
 };
-
 
 exports.listarPresencas = async () => {
   try {

@@ -20,14 +20,11 @@ async function getSheetsClient() {
   return sheets;
 }
 
-
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-// ✅ REGISTRAR PRESENÇA (atualiza linha de quem confirmou)
 async function registrarPresenca({ nome, status }) {
   const sheets = await getSheetsClient();
 
-  // Pega todas as linhas da aba Convidados
   const range = 'Convidados!A2:C';
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
@@ -40,17 +37,15 @@ async function registrarPresenca({ nome, status }) {
     throw new Error('Nenhum convidado encontrado');
   }
 
-  // Procura a linha com o nome correspondente
   const rowIndex = rows.findIndex(row => row[0]?.toLowerCase() === nome.toLowerCase());
 
   if (rowIndex === -1) {
   throw new Error(`Convidado com nome "${nome}" não encontrado.`);
 }
 
+  const rowNumber = rowIndex + 2; 
 
-  const rowNumber = rowIndex + 2; // +2 porque começa da linha 2 na planilha
-
-  const updateRange = `Convidados!B${rowNumber}:C${rowNumber}`; // Presença e Observação
+  const updateRange = `Convidados!B${rowNumber}:C${rowNumber}`; 
   const values = [[status, '']];
 
   await sheets.spreadsheets.values.update({
